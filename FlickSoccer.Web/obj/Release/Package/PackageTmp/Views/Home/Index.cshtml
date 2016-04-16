@@ -1,0 +1,51 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Phone</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    <script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.1.2.js"></script>
+    <script src="~/signalr/hubs" type="text/javascript"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            $.connection.hub.start();
+            var chat = $.connection.chatHub;
+
+            function CallToServer() {
+                chat.server.ballComing();
+            }
+
+            $("#phoneBall").click(function () {
+                var ballY = parseFloat($("#phoneBall").css("top"));
+                var ballHeight = $("#phoneBall").height();
+
+                var interval = setInterval(function () {
+                    console.log("looping");
+                    ballY -= 2;
+                    $("#phoneBall").css({ top: ballY + "px" });
+
+                    if (ballY < -ballHeight) {
+                        clearInterval(interval);
+                        CallToServer();
+                    }
+                }, 1);
+            });
+
+            chat.client.showAlert = function (msg) {
+                alert(msg);
+            };
+        });
+    </script>
+</head>
+<body>
+
+    <div class="phoneContent">
+        <img id="phoneBall" class="ballImage" src="~/Content/images/ball.png" />
+    </div>
+</body>
+</html>

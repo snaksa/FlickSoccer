@@ -1,0 +1,25 @@
+﻿.phoneContent{
+    width: 100%;
+    height: 100%;
+    background-color: #007d10;
+}
+
+.ballImage{
+    width: 5%;
+    position: absolute;
+    top: 40%;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+
+#pcBall{
+    width: 5%;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: none;
+}

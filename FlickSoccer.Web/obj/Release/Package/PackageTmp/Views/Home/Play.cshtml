@@ -1,0 +1,116 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Play</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    <script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.1.2.js"></script>
+    <script src="~/signalr/hubs" type="text/javascript"></script>
+
+    <script src="~/js/sprites.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            var WIDTH = window.innerWidth;
+            var HEIGHT = window.innerHeight;
+
+            var canvas = document.getElementById('gameCanvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = WIDTH;
+            canvas.height = HEIGHT;
+
+            DrawField();
+
+            $.connection.hub.start();
+            var chat = $.connection.chatHub;
+
+
+            chat.client.showBall = function () {
+                $("#pcBall").css({ display: "block" });
+                var ballY = parseFloat($("#pcBall").css("top"));
+                var ballHeight = $("#pcBall").height();
+                var interval = setInterval(function () {
+                    ballY -= 2;
+                    $("#pcBall").css({ top: ballY + "px" });
+
+                    if (ballY < -ballHeight) {
+                        clearInterval(interval);
+                        $("#pcBall").css({ top: 100 + "%" });
+                        $("#pcBall").css({ display: "none" });
+                    }
+                }, 1);
+            };
+
+
+            var grassY, bannerY;
+            function DrawField() {
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+                var img1 = new Image();
+                img1.onload = function () {
+                    initSprites(this);
+                    DrawGrass();
+                    DrawBanner();
+                    DrawFans();
+                    DrawGoal();
+                }
+                img1.src = '@Url.Content("~/Content/images/spritesheet.png")';
+            }
+
+            function DrawGrass() {
+                var topX = 0;
+                var topY = HEIGHT - grass.drawHeight;
+                while (topY > HEIGHT / 2) {
+                    while (topX < WIDTH) {
+                        grass.draw(ctx, topX, topY);
+                        topX += grass.drawWidth;
+                    }
+                    grassY = topY;
+
+                    topX = 0;
+                    topY -= grass.drawHeight;
+                }
+            }
+
+            function DrawGoal() {
+                var topX = WIDTH / 2 - goal.drawWidth / 2;
+                var topY = grassY - goal.drawHeight + 80;
+                goal.draw(ctx, topX, topY);
+            }
+
+            function DrawBanner() {
+                var topX = 0;
+                var topY = grassY - banner.drawHeight;
+                bannerY = topY;
+                banner.draw(ctx, topX, topY);
+            }
+
+            function DrawFans() {
+                var topX = 0;
+                var topY = bannerY - fans.drawHeight;
+
+                while (topX < WIDTH) {
+                    fans.draw(ctx, topX, topY);
+                    topX += fans.drawWidth;
+                }
+                
+            }
+        });
+    </script>
+</head>
+<body>
+
+    <canvas id="gameCanvas"></canvas>
+
+
+
+
+    @*<div class="phoneContent">
+            <img id="pcBall" class="ballImage" src="~/Content/images/ball.png" />
+        </div>*@
+</body>
+</html>

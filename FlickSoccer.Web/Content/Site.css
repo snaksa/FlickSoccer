@@ -1,0 +1,28 @@
+﻿canvas{
+    z-index: 1;
+}
+
+.phoneContent{
+    z-index: 2;
+}
+
+.ballImage{
+    width: 5%;
+    position: absolute;
+    top: 40%;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+
+#pcBall{
+    width: 5%;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: none;
+    z-index: 2;
+}

@@ -14,44 +14,99 @@
     <script>
         $(document).ready(function () {
 
-            $('#lastDiv').nextAll().remove();
+            $('#gameCanvas').nextAll().remove();
 
             $.connection.hub.start();
             var chat = $.connection.chatHub;
 
             function CallToServer() {
-                chat.server.ballComing();
+                chat.server.ballComing(ux*3, 3);
             }
 
-            $("#phoneBall").click(function () {
-                var ballY = parseFloat($("#phoneBall").css("top"));
-                var ballHeight = $("#phoneBall").height();
 
-                var interval = setInterval(function () {
-                    console.log("looping");
-                    ballY -= 2;
-                    $("#phoneBall").css({ top: ballY + "px" });
+            var WIDTH = window.innerWidth;
+            var HEIGHT = window.innerHeight;
 
-                    if (ballY == 10 || ballY == 11) {
-                        CallToServer();
-                    }
+            var canvas = document.getElementById('gameCanvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = WIDTH;
+            canvas.height = HEIGHT;
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
-                    if (ballY < -ballHeight) {
-                        clearInterval(interval);
-                    }
-                }, 1);
+            var move = false;
+            var mY = HEIGHT / 1.5;
+            var mX = WIDTH / 2;
+            var ux;
+
+            var dx, dy;
+
+            document.addEventListener("mousedown", function (e) {
+                dx = e.pageX;
+                dy = e.pageY;
             });
 
-            chat.client.showAlert = function (msg) {
-                alert(msg);
+            document.addEventListener("mouseup", function (e) {
+                move = true;
+                ux = (e.pageX - dx) / Math.abs(dy - e.pageY);
+            });
+
+            var loop2;
+            var img1 = new Image();
+            img1.onload = function () {
+                initSprites(this);
+                run();
+            }
+            img1.src = '@Url.Content("~/Content/images/spritesheet.png")';
+
+            var called = false;
+            function update() {
+                if (move) {
+                    mY -= 3;
+                    mX += 3 * ux;
+                    if (mY < 10) {
+                        if (!called) {
+                            CallToServer();
+                            called = true;
+                        }
+                        
+                    }
+
+                    //console.log(mY + " " + mX);
+                }
+            }
+
+            function render() {
+                ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+                var x = 0;
+                var y = 0;
+                while (y < HEIGHT + grass.drawHeight) {
+                    while (x < WIDTH + grass.drawWidth) {
+                        grass.draw(ctx, x, y);
+                        x += grass.drawWidth;
+                    }
+                    x = 0;
+                    y += grass.drawHeight;
+                }
+
+                ball.draw(ctx, mX, mY);
+            }
+
+            function run() {
+                loop = function () {
+                    update();
+                    render();
+                    loop2 = window.requestAnimationFrame(loop, canvas);
+                }
+                window.requestAnimationFrame(loop, canvas);
             };
         });
     </script>
 </head>
 <body>
 
-    <div id="lastDiv" class="phoneContent">
-        <img id="phoneBall" class="ballImage" src="~/Content/images/ball.png" />
-    </div>
+    <canvas id="gameCanvas"></canvas>
+    <script src="~/js/sprites.js"></script>
 </body>
 </html>

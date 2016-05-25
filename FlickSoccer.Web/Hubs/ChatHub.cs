@@ -8,9 +8,9 @@ namespace FlickSoccer.Web.Hubs
 {
     public class ChatHub : Hub
     {
-        public void BallComing()
+        public void BallComing(double ux, double uy)
         {
-            Clients.All.showBall();
+            Clients.All.showBall(ux, uy);
         }
     }
 }
